@@ -12,6 +12,10 @@ angular.module('yamaApp', [
         templateUrl: 'partials/main',
         controller: 'MainCtrl'
       })
+      .when('/events', {
+        templateUrl: 'partials/events',
+        controller: 'EventsCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

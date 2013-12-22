@@ -50,7 +50,10 @@ var api = require('./lib/controllers/api'),
     controllers = require('./lib/controllers');
 
 // Server Routes
+app.get('/api/events', api.events);
 app.get('/api/awesomeThings', api.awesomeThings);
+
+app.post('/api/events.json', api.newEvent);
 
 // Angular Routes
 app.get('/partials/*', controllers.partials);

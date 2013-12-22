@@ -1,0 +1,14 @@
+div(ng-controller='EventListCtrl',
+  ng-init="init( #{JSON.stringify(eventList)} );")
+  | Add an event:
+  br
+  form(name='eventForm', ng-submit='save(eventForm)')
+    input(type='text', ng-model='newEvent.title', name='title', placeholder='Title')
+    div(ng-show='eventForm.title.$error.mongoose', style='color: red')
+      {{ eventForm.title.$error.mongoose }}
+    input(type='submit')
+  br
+  hr
+  br
+  div(ng-repeat='event in eventList.events')
+    | Title: {{ event.title }}
