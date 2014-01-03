@@ -1,4 +1,4 @@
-// Generated on 2013-12-22 using generator-angular-fullstack 1.0.1
+// Generated on 2013-12-29 using generator-angular-fullstack 1.1.1
 'use strict';
 
 // # Globbing
@@ -31,7 +31,8 @@ module.exports = function (grunt) {
       },
       dev: {
         options: {
-          script: 'server.js'
+          script: 'server.js',
+          debug: true
         }
       },
       prod: {
@@ -48,8 +49,11 @@ module.exports = function (grunt) {
     },
     watch: {
       js: {
-        files: ['{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js'],
-        tasks: ['newer:jshint:all']
+        files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
+        tasks: ['newer:jshint:all'],
+        options: {
+          livereload: true
+        }
       },
       jsTest: {
         files: ['test/spec/{,*/}*.js'],
@@ -59,6 +63,9 @@ module.exports = function (grunt) {
         files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
         tasks: ['compass:server', 'autoprefixer']
       },
+      gruntfile: {
+        files: ['Gruntfile.js']
+      },
       livereload: {
         files: [
           '<%= yeoman.app %>/<%= yeoman.views %>/{,*//*}*.{html,jade}',
@@ -66,6 +73,7 @@ module.exports = function (grunt) {
           '{.tmp,<%= yeoman.app %>}/scripts/{,*//*}*.js',
           '<%= yeoman.app %>/images/{,*//*}*.{png,jpg,jpeg,gif,webp,svg}',
         ],
+      
         options: {
           livereload: true
         }
@@ -80,13 +88,6 @@ module.exports = function (grunt) {
           livereload: true,
           nospawn: true //Without this option specified express won't be reloaded
         }
-      },
-      styles: {
-        files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
-        tasks: ['newer:copy:styles', 'autoprefixer']
-      },
-      gruntfile: {
-        files: ['Gruntfile.js']
       }
     },
 
@@ -148,9 +149,15 @@ module.exports = function (grunt) {
       }
     },
 
-
-
-
+    // Automatically inject Bower components into the app
+    'bower-install': {
+      app: {
+        html: '<%= yeoman.app %>/views/index.jade',
+        ignorePath: '<%= yeoman.app %>/'
+      }
+    },
+    
+    
     // Compiles Sass to CSS and generates necessary files if requested
     compass: {
       options: {
@@ -165,7 +172,8 @@ module.exports = function (grunt) {
         httpGeneratedImagesPath: '/images/generated',
         httpFontsPath: '/styles/fonts',
         relativeAssets: false,
-        assetCacheBuster: false
+        assetCacheBuster: false,
+        raw: 'Sass::Script::Number.precision = 10\n'
       },
       dist: {
         options: {
@@ -238,14 +246,10 @@ module.exports = function (grunt) {
     htmlmin: {
       dist: {
         options: {
-          // Optional configurations that you can uncomment to use
-          // removeCommentsFromCDATA: true,
-          // collapseBooleanAttributes: true,
-          // removeAttributeQuotes: true,
-          // removeRedundantAttributes: true,
-          // useShortDoctype: true,
-          // removeEmptyAttributes: true,
-          // removeOptionalTags: true*/
+          //collapseWhitespace: true,
+          //collapseBooleanAttributes: true,
+          //removeCommentsFromCDATA: true,
+          //removeOptionalTags: true
         },
         files: [{
           expand: true,
@@ -289,7 +293,7 @@ module.exports = function (grunt) {
             '.htaccess',
             'bower_components/**/*',
             'images/{,*/}*.{webp}',
-            'fonts/*'
+            'fonts/**/*'
           ]
         }, {
           expand: true,
@@ -301,9 +305,7 @@ module.exports = function (grunt) {
           expand: true,
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/images',
-          src: [
-            'generated/*'
-          ]
+          src: ['generated/*']
         }]
       },
       heroku: {
@@ -336,16 +338,13 @@ module.exports = function (grunt) {
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
-        'compass:server',
-        'copy:styles'
+        'compass:server'
       ],
       test: [
-        'compass',
-        'copy:styles'
+        'compass'
       ],
       dist: [
         'compass:dist',
-        'copy:styles',
         'imagemin',
         'svgmin',
         'htmlmin'
@@ -398,6 +397,7 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
+      'bower-install',
       'concurrent:server',
       'autoprefixer',
       'express:dev',
@@ -420,6 +420,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'bower-install',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
